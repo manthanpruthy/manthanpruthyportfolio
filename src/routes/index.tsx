@@ -99,6 +99,15 @@ function Reveal({ children, className = "" }: { children: ReactNode; className?:
     observer.observe(element);
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    const updatePointer = (event: PointerEvent) => {
+      document.documentElement.style.setProperty("--pointer-x", `${event.clientX}px`);
+      document.documentElement.style.setProperty("--pointer-y", `${event.clientY}px`);
+    };
+    window.addEventListener("pointermove", updatePointer, { passive: true });
+    return () => window.removeEventListener("pointermove", updatePointer);
+  }, []);
   return <div ref={ref} className={`reveal ${visible ? "is-visible" : ""} ${className}`}>{children}</div>;
 }
 
