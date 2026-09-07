@@ -1,4 +1,4 @@
-# Manthan Pruthy Portfolio
+# P Manthan Pruthy
 
 ## Goal
 Build a polished, single-page personal portfolio that presents Manthan as an ambitious, versatile early-career technologist at the intersection of AI, data, business, communication, and leadership—without overstating his experience.
