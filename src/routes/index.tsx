@@ -2,8 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import {
   ArrowDown,
   ArrowUpRight,
-  AtSign,
-  BriefcaseBusiness,
   Check,
   ChevronRight,
   Github,
@@ -12,16 +10,19 @@ import {
   Mail,
   MapPin,
   Menu,
-  Phone,
   Sparkles,
   Trophy,
   Users,
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import portraitAsset from "@/assets/manthan-portrait.jpg.asset.json";
 
 const description =
   "Portfolio of Manthan Pruthy, an AI & Data Science student exploring technology, business, communication, and leadership.";
+
+const LINKEDIN_URL = "https://www.linkedin.com/in/p-manthan-pruthy-473759319";
+const GITHUB_URL = "https://github.com/manthanpruthy";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -43,9 +44,9 @@ export const Route = createFileRoute("/")({
           "@type": "Person",
           name: "Manthan Pruthy",
           email: "mailto:pruthym@gmail.com",
-          telephone: "+91 7676806233",
           address: { "@type": "PostalAddress", addressLocality: "Bengaluru", addressCountry: "IN" },
           alumniOf: { "@type": "CollegeOrUniversity", name: "REVA University" },
+          sameAs: [LINKEDIN_URL, GITHUB_URL],
         }),
       },
     ],
@@ -115,6 +116,35 @@ function SectionHead({ eyebrow, title }: { eyebrow: string; title: string }) {
   return <Reveal className="section-head"><p className="eyebrow"><span />{eyebrow}</p><h2>{title}</h2></Reveal>;
 }
 
+function Portrait() {
+  const tiltRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const tilt = tiltRef.current;
+    if (!tilt) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const frame = tilt.querySelector<HTMLElement>(".portrait-frame");
+    if (!frame) return;
+    const move = (event: PointerEvent) => {
+      const rect = tilt.getBoundingClientRect();
+      const px = (event.clientX - rect.left) / rect.width;
+      const py = (event.clientY - rect.top) / rect.height;
+      frame.style.setProperty("--rx", `${((py - 0.5) * -12).toFixed(2)}deg`);
+      frame.style.setProperty("--ry", `${((px - 0.5) * 16).toFixed(2)}deg`);
+    };
+    const leave = () => { frame.style.setProperty("--rx", "0deg"); frame.style.setProperty("--ry", "0deg"); };
+    tilt.addEventListener("pointermove", move);
+    tilt.addEventListener("pointerleave", leave);
+    return () => { tilt.removeEventListener("pointermove", move); tilt.removeEventListener("pointerleave", leave); };
+  }, []);
+  return (
+    <div className="portrait-tilt" ref={tiltRef}>
+      <div className="portrait-frame">
+        <img src={portraitAsset.url} alt="Portrait of Manthan Pruthy" loading="eager" />
+      </div>
+    </div>
+  );
+}
+
 function Portfolio() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [active, setActive] = useState("home");
@@ -140,6 +170,7 @@ function Portfolio() {
 
   return (
     <div className="site-shell">
+      <div className="aurora" aria-hidden="true"><i className="a1" /><i className="a2" /></div>
       <div className="scroll-progress" style={{ transform: `scaleX(${progress / 100})` }} />
       <header className="site-nav">
         <a className="wordmark" href="#home" onClick={(e) => { e.preventDefault(); navigate("home"); }} aria-label="Manthan Pruthy, home">MP<span>.</span></a>
@@ -156,20 +187,23 @@ function Portfolio() {
         <section id="home" className="hero section-pad">
           <div className="hero-grid" aria-hidden="true" />
           <div className="signal signal-a" aria-hidden="true" /><div className="signal signal-b" aria-hidden="true" />
-          <div className="hero-content">
-            <p className="availability"><span /> Bengaluru, India · REVA University</p>
-            <h1>Building my path at the intersection of <em>technology, business</em> and people.</h1>
-            <p className="hero-copy">I'm a second-year Artificial Intelligence & Data Science engineering student exploring technology, data, business and the human side of problem-solving.</p>
-            <div className="hero-actions">
-              <button className="btn btn-primary" onClick={() => goTo("experience")}>View My Journey <ArrowDown /></button>
-              <button className="btn btn-secondary" onClick={() => goTo("contact")}>Let's Connect <ArrowUpRight /></button>
+          <div className="hero-inner">
+            <div className="hero-content">
+              <p className="availability"><span /> Bengaluru, India · REVA University</p>
+              <h1>Building my path at the intersection of <em>technology, business</em> and people.</h1>
+              <p className="hero-copy">I'm a second-year Artificial Intelligence & Data Science engineering student exploring technology, data, business and the human side of problem-solving.</p>
+              <div className="hero-actions">
+                <button className="btn btn-primary" onClick={() => goTo("experience")}>View My Journey <ArrowDown /></button>
+                <button className="btn btn-secondary" onClick={() => goTo("contact")}>Let's Connect <ArrowUpRight /></button>
+              </div>
             </div>
+            <Reveal className="hero-portrait"><Portrait /></Reveal>
           </div>
           <div className="hero-footer">
             <p>Curious. Versatile. Hands-on.<br />People-oriented. Technology-driven.</p>
             <div className="socials">
-              <span className="icon-link disabled" title="LinkedIn link coming soon" aria-label="LinkedIn link coming soon"><Linkedin /></span>
-              <span className="icon-link disabled" title="GitHub link coming soon" aria-label="GitHub link coming soon"><Github /></span>
+              <a className="icon-link" href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" aria-label="Manthan on LinkedIn"><Linkedin /></a>
+              <a className="icon-link" href={GITHUB_URL} target="_blank" rel="noopener noreferrer" aria-label="Manthan on GitHub"><Github /></a>
               <a className="icon-link" href="mailto:pruthym@gmail.com" aria-label="Email Manthan"><Mail /></a>
             </div>
           </div>
@@ -273,9 +307,8 @@ function Portfolio() {
             <div><strong>Manthan Pruthy</strong><p>AI & Data Science Engineering Student<br />REVA University · Bengaluru</p></div>
             <div className="contact-actions">
               <a className="btn btn-primary" href="mailto:pruthym@gmail.com"><Mail /> Email Me</a>
-              <a className="btn btn-secondary" href="tel:+917676806233"><Phone /> Call</a>
-              <span className="btn btn-disabled" title="Add LinkedIn URL later"><Linkedin /> LinkedIn</span>
-              <span className="btn btn-disabled" title="Add GitHub URL later"><Github /> GitHub</span>
+              <a className="btn btn-secondary" href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer"><Linkedin /> LinkedIn</a>
+              <a className="btn btn-secondary" href={GITHUB_URL} target="_blank" rel="noopener noreferrer"><Github /> GitHub</a>
             </div>
           </div>
           <footer><span>© 2026 Manthan Pruthy</span><span>Built with curiosity in Bengaluru <MapPin /></span><button onClick={() => goTo("home")} aria-label="Back to top">Back to top <ArrowDown /></button></footer>
